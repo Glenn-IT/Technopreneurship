@@ -137,14 +137,16 @@ try {
                             <td><?= renderStatusBadge($bill['status']); ?></td>
                             <td><small class="text-muted"><?= sanitize($bill['remarks'] ?? '-'); ?></small></td>
                             <td class="text-end">
-                                <a href="<?= baseUrl('bills/edit.php?id=' . $bill['bill_id']); ?>" class="btn btn-sm btn-light me-1" title="Edit">
-                                    <i data-feather="edit-2" style="width:14px;"></i> Edit
-                                </a>
-                                <a href="<?= baseUrl('bills/delete.php?id=' . $bill['bill_id']); ?>" 
-                                   class="btn btn-sm btn-outline-danger btn-delete-confirm" 
-                                   data-item="Bill #<?= $bill['bill_id']; ?> for <?= sanitize($bill['consumer_name']); ?>" title="Delete">
-                                    <i data-feather="trash-2" style="width:14px;"></i>
-                                </a>
+                                <div class="table-action-btns">
+                                    <a href="<?= baseUrl('bills/edit.php?id=' . $bill['bill_id']); ?>" class="btn-action-edit" title="Edit Bill">
+                                        <i data-feather="edit-2"></i> Edit
+                                    </a>
+                                    <a href="<?= baseUrl('bills/delete.php?id=' . $bill['bill_id']); ?>" 
+                                       class="btn-action-delete btn-delete-confirm" 
+                                       data-item="Bill #<?= $bill['bill_id']; ?> for <?= sanitize($bill['consumer_name']); ?>" title="Delete Bill">
+                                        <i data-feather="trash-2"></i> Delete
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>

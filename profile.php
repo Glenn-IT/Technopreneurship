@@ -1,7 +1,7 @@
 <?php
 // profile.php - User Profile & Change Password Module
-$pageTitle = 'My Account Profile';
-require_once __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/includes/auth.php';
+requireLogin();
 
 $user = currentUser();
 $errorProfile = '';
@@ -79,6 +79,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type']) && $_P
         }
     }
 }
+
+$pageTitle = 'My Account Profile';
+require_once __DIR__ . '/includes/header.php';
 ?>
 
 <div class="row">

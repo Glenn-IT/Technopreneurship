@@ -4,6 +4,9 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+if (ob_get_level() === 0) {
+    ob_start();
+}
 
 /**
  * Sanitize output text for XSS prevention

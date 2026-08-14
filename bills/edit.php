@@ -1,7 +1,7 @@
 <?php
 // bills/edit.php - Edit Record Module
-$pageTitle = 'Edit Water Bill Record';
-require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/auth.php';
+requireLogin();
 
 $billId = (int)($_GET['id'] ?? 0);
 $error = '';
@@ -33,13 +33,20 @@ try {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $consumerName = trim($_POST['consumer_name'] ?? '');
     $meterNumber  = trim($_POST['meter_number'] ?? '');
-    $billingMonth = trim($_POST['billing_month'] ?? '');
+    $rawMonth     = trim($_POST['billing_month'] ?? '');
     $consumption  = (float)($_POST['consumption'] ?? 0);
     $amountDue    = (float)($_POST['amount_due'] ?? 0);
     $dueDate      = trim($_POST['due_date'] ?? '');
     $status       = trim($_POST['status'] ?? 'unpaid');
     $remarks      = trim($_POST['remarks'] ?? '');
     $csrfToken    = $_POST['csrf_token'] ?? '';
+
+    // Convert YYYY-MM datetime/month picker value to "Month Year" format (e.g. "August 2026")
+    if (preg_match('/^\d{4}-\d{2}$/', $rawMonth)) {
+        $billingMonth = date('F Y', strtotime($rawMonth . '-01'));
+    } else {
+        $billingMonth = $rawMonth;
+    }
 
     if (!verifyCsrfToken($csrfToken)) {
         $error = 'Invalid security token. Please try again.';
@@ -78,6 +85,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+$pageTitle = 'Edit Water Bill Record';
+require_once __DIR__ . '/../includes/header.php';
+
+// Format billing month for month input (YYYY-MM)
+$rawMonthVal = $_POST['billing_month'] ?? $bill['billing_month'];
+if (preg_match('/^\d{4}-\d{2}$/', $rawMonthVal)) {
+    $currentMonthVal = $rawMonthVal;
+} else {
+    $time = strtotime('1 ' . $rawMonthVal);
+    $currentMonthVal = ($time !== false) ? date('Y-m', $time) : date('Y-m');
+}
+$currentMeterVal = $_POST['meter_number'] ?? $bill['meter_number'];
+$currentRemarksVal = $_POST['remarks'] ?? $bill['remarks'];
 ?>
 
 <div class="row justify-content-center">
@@ -112,16 +133,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="col-md-6">
                         <label for="meter_number" class="form-label-custom">Meter Number <span class="text-danger">*</span></label>
-                        <input type="text" name="meter_number" id="meter_number" class="form-control-custom" 
-                               required value="<?= sanitize($_POST['meter_number'] ?? $bill['meter_number']); ?>">
+                        <div class="input-group">
+                            <input type="text" name="meter_number" id="meter_number" class="form-control-custom" 
+                                   required value="<?= sanitize($currentMeterVal); ?>">
+                            <button type="button" class="btn btn-outline-secondary d-flex align-items-center gap-1" id="btnRandomMeter" title="Generate New Random Meter Number">
+                                <i data-feather="refresh-cw" style="width:14px; height:14px;"></i> Random
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label for="billing_month" class="form-label-custom">Billing Month <span class="text-danger">*</span></label>
-                        <input type="text" name="billing_month" id="billing_month" class="form-control-custom" 
-                               required value="<?= sanitize($_POST['billing_month'] ?? $bill['billing_month']); ?>">
+                        <input type="month" name="billing_month" id="billing_month" class="form-control-custom" 
+                               required value="<?= sanitize($currentMonthVal); ?>">
                     </div>
 
                     <div class="col-md-6">
@@ -136,6 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label for="consumption" class="form-label-custom">Water Consumption (m³)</label>
                         <input type="number" step="0.01" min="0" name="consumption" id="consumption" class="form-control-custom" 
                                value="<?= sanitize($_POST['consumption'] ?? $bill['consumption']); ?>">
+                        <small class="text-muted">Rate: ₱25.00 per cubic meter</small>
                     </div>
 
                     <div class="col-md-6">
@@ -156,8 +183,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="col-md-6">
                         <label for="remarks" class="form-label-custom">Remarks / Notes</label>
-                        <input type="text" name="remarks" id="remarks" class="form-control-custom" 
-                               value="<?= sanitize($_POST['remarks'] ?? $bill['remarks']); ?>">
+                        <div class="d-flex flex-column gap-2">
+                            <select id="remarks_select" class="form-select-custom">
+                                <option value="Regular Billing" <?= ($currentRemarksVal === 'Regular Billing') ? 'selected' : ''; ?>>Regular Billing</option>
+                                <option value="Paid on time" <?= ($currentRemarksVal === 'Paid on time') ? 'selected' : ''; ?>>Paid on time</option>
+                                <option value="Payment received via OTC" <?= ($currentRemarksVal === 'Payment received via OTC') ? 'selected' : ''; ?>>Payment received via OTC</option>
+                                <option value="Payment received via GCash / Online" <?= ($currentRemarksVal === 'Payment received via GCash / Online') ? 'selected' : ''; ?>>Payment received via GCash / Online</option>
+                                <option value="First notice sent" <?= ($currentRemarksVal === 'First notice sent') ? 'selected' : ''; ?>>First notice sent</option>
+                                <option value="Follow-up call requested" <?= ($currentRemarksVal === 'Follow-up call requested') ? 'selected' : ''; ?>>Follow-up call requested</option>
+                                <option value="Overdue notice pending" <?= ($currentRemarksVal === 'Overdue notice pending') ? 'selected' : ''; ?>>Overdue notice pending</option>
+                                <option value="Disconnection Warning" <?= ($currentRemarksVal === 'Disconnection Warning') ? 'selected' : ''; ?>>Disconnection Warning</option>
+                                <option value="High Consumption Alert" <?= ($currentRemarksVal === 'High Consumption Alert') ? 'selected' : ''; ?>>High Consumption Alert</option>
+                                <option value="Meter Inspection Required" <?= ($currentRemarksVal === 'Meter Inspection Required') ? 'selected' : ''; ?>>Meter Inspection Required</option>
+                                <option value="custom">Other / Custom Remark...</option>
+                            </select>
+                            <input type="text" name="remarks" id="remarks" class="form-control-custom" 
+                                   placeholder="Select remark or type custom note" value="<?= sanitize($currentRemarksVal); ?>">
+                        </div>
                     </div>
                 </div>
 
@@ -171,5 +213,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Random Meter Number Generator
+    const btnRandom = document.getElementById('btnRandomMeter');
+    const inputMeter = document.getElementById('meter_number');
+    if (btnRandom && inputMeter) {
+        btnRandom.addEventListener('click', function() {
+            const randNum = Math.floor(10000 + Math.random() * 90000);
+            inputMeter.value = 'MTR-' + randNum;
+        });
+    }
+
+    // 2. Remarks Combobox
+    const remarksSelect = document.getElementById('remarks_select');
+    const remarksInput = document.getElementById('remarks');
+    if (remarksSelect && remarksInput) {
+        remarksSelect.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                remarksInput.value = '';
+                remarksInput.focus();
+            } else if (this.value !== '') {
+                remarksInput.value = this.value;
+            }
+        });
+        
+        remarksInput.addEventListener('input', function() {
+            let foundMatch = false;
+            for (let i = 0; i < remarksSelect.options.length; i++) {
+                if (remarksSelect.options[i].value === this.value) {
+                    remarksSelect.selectedIndex = i;
+                    foundMatch = true;
+                    break;
+                }
+            }
+            if (!foundMatch) {
+                remarksSelect.value = 'custom';
+            }
+        });
+    }
+
+    // 3. Water Consumption Auto Amount Calculation (Rate: P25 / m3)
+    const consumptionInput = document.getElementById('consumption');
+    const amountDueInput = document.getElementById('amount_due');
+    if (consumptionInput && amountDueInput) {
+        consumptionInput.addEventListener('input', function() {
+            const val = parseFloat(this.value) || 0;
+            const rate = 25.00;
+            amountDueInput.value = (val * rate).toFixed(2);
+        });
+    }
+});
+</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

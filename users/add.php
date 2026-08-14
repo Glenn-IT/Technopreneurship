@@ -1,7 +1,6 @@
 <?php
 // users/add.php - Register User (Admin Side)
-$pageTitle = 'Register New System User';
-require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/auth.php';
 requireAdmin();
 
 $error = '';
@@ -48,6 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+$pageTitle = 'Register New System User';
+require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="row justify-content-center">

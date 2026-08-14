@@ -66,16 +66,18 @@ try {
                             </td>
                             <td><?= date('M d, Y', strtotime($u['created_at'])); ?></td>
                             <td class="text-end">
-                                <a href="<?= baseUrl('users/edit.php?id=' . $u['user_id']); ?>" class="btn btn-sm btn-light me-1" title="Edit User">
-                                    <i data-feather="edit-2" style="width:14px;"></i> Edit
-                                </a>
-                                <?php if ($u['user_id'] != $_SESSION['user_id']): ?>
-                                    <a href="<?= baseUrl('users/delete.php?id=' . $u['user_id']); ?>" 
-                                       class="btn btn-sm btn-outline-danger btn-delete-confirm" 
-                                       data-item="User account '<?= sanitize($u['username']); ?>'" title="Delete User">
-                                        <i data-feather="trash-2" style="width:14px;"></i>
+                                <div class="table-action-btns">
+                                    <a href="<?= baseUrl('users/edit.php?id=' . $u['user_id']); ?>" class="btn-action-edit" title="Edit User">
+                                        <i data-feather="edit-2"></i> Edit
                                     </a>
-                                <?php endif; ?>
+                                    <?php if ($u['user_id'] != $_SESSION['user_id']): ?>
+                                        <a href="<?= baseUrl('users/delete.php?id=' . $u['user_id']); ?>" 
+                                           class="btn-action-delete btn-delete-confirm" 
+                                           data-item="User account '<?= sanitize($u['username']); ?>'" title="Delete User">
+                                            <i data-feather="trash-2"></i> Delete
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>

@@ -435,6 +435,70 @@ body {
   box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
 }
 
+/* Table Action Buttons Alignment */
+.table-action-btns {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.btn-action-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #0284c7;
+  background-color: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: var(--transition);
+  line-height: 1;
+}
+
+.btn-action-edit:hover {
+  background-color: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+}
+
+.btn-action-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #ef4444;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: var(--transition);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.btn-action-delete:hover {
+  background-color: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
+.btn-action-edit svg,
+.btn-action-delete svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.2;
+}
+
 /* Form Fields */
 .form-label-custom {
   font-size: 0.88rem;
