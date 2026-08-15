@@ -6,6 +6,8 @@ requireLogin();
 $search = trim($_GET['search'] ?? '');
 $statusFilter = trim($_GET['status'] ?? '');
 $monthFilter = trim($_GET['month'] ?? '');
+$dateFrom = trim($_GET['date_from'] ?? '');
+$dateTo = trim($_GET['date_to'] ?? '');
 
 $whereClauses = [];
 $params = [];
@@ -24,6 +26,16 @@ if ($statusFilter !== '') {
 if ($monthFilter !== '') {
     $whereClauses[] = "billing_month = :month";
     $params['month'] = $monthFilter;
+}
+
+if ($dateFrom !== '') {
+    $whereClauses[] = "due_date >= :date_from";
+    $params['date_from'] = $dateFrom;
+}
+
+if ($dateTo !== '') {
+    $whereClauses[] = "due_date <= :date_to";
+    $params['date_to'] = $dateTo;
 }
 
 $whereSQL = !empty($whereClauses) ? "WHERE " . implode(" AND ", $whereClauses) : "";

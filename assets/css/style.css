@@ -588,3 +588,44 @@ body {
     margin-left: 0;
   }
 }
+
+/* Report Filter Card & Print Styles */
+.filter-card {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .app-sidebar, .top-navbar, .no-print, .btn, .top-navbar-actions, #sidebarToggle {
+    display: none !important;
+  }
+  .main-wrapper {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+  .content-container {
+    padding: 0 !important;
+  }
+  .card-box, .stat-card, .table-responsive-wrapper {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+}
+
