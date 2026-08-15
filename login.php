@@ -11,18 +11,18 @@ if (isset($_SESSION['user_id'])) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $usernameOrEmail = trim($_POST['username_email'] ?? '');
+    $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
     $csrfToken = $_POST['csrf_token'] ?? '';
 
     if (!verifyCsrfToken($csrfToken)) {
         $error = 'Invalid security token. Please refresh and try again.';
-    } elseif (empty($usernameOrEmail) || empty($password)) {
-        $error = 'Please enter both your username/email and password.';
+    } elseif (empty($username) || empty($password)) {
+        $error = 'Please enter both your username and password.';
     } else {
         try {
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE (username = :u OR email = :e) AND status = 'active' LIMIT 1");
-            $stmt->execute(['u' => $usernameOrEmail, 'e' => $usernameOrEmail]);
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :u AND status = 'active' LIMIT 1");
+            $stmt->execute(['u' => $username]);
             $user = $stmt->fetch();
 
             if ($user && password_verify($password, $user['password'])) {
@@ -80,15 +80,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?= csrfField(); ?>
 
         <div class="mb-3">
-            <label for="username_email" class="form-label-custom">Username or Email</label>
-            <input type="text" name="username_email" id="username_email" class="form-control-custom" 
-                   placeholder="e.g. admin or admin@ramoswater.com" required value="<?= sanitize($_POST['username_email'] ?? ''); ?>">
+            <label for="username" class="form-label-custom">Username</label>
+            <input type="text" name="username" id="username" class="form-control-custom" 
+                   required value="<?= sanitize($_POST['username'] ?? ''); ?>">
         </div>
 
         <div class="mb-4">
             <label for="password" class="form-label-custom">Password</label>
             <input type="password" name="password" id="password" class="form-control-custom" 
-                   placeholder="••••••••" required>
+                   required>
         </div>
 
         <button type="submit" class="btn-primary-custom w-100 justify-content-center py-2 mb-3">
