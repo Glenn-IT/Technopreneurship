@@ -71,6 +71,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Show / Hide Password Toggle Event Handler
+    document.addEventListener('click', function(e) {
+        const toggleBtn = e.target.closest('.toggle-password-btn');
+        if (toggleBtn) {
+            e.preventDefault();
+            const targetId = toggleBtn.getAttribute('data-target');
+            let input = null;
+            if (targetId) {
+                input = document.getElementById(targetId);
+            } else {
+                const wrapper = toggleBtn.closest('.password-input-wrapper');
+                if (wrapper) {
+                    input = wrapper.querySelector('input[type="password"], input[type="text"]');
+                }
+            }
+
+            if (input) {
+                const isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+
+                // Update icon dynamically
+                if (typeof feather !== 'undefined') {
+                    toggleBtn.innerHTML = isPassword ? feather.icons['eye-off'].toSvg() : feather.icons['eye'].toSvg();
+                } else {
+                    toggleBtn.innerHTML = isPassword ? '🙈' : '👁️';
+                }
+            }
+        }
+    });
+
     // Alert dismissal handler (smooth fade out & removal)
     document.addEventListener('click', function(e) {
         const dismissBtn = e.target.closest('[data-bs-dismiss="alert"], .btn-close');

@@ -43,7 +43,7 @@ $whereSQL = !empty($whereClauses) ? "WHERE " . implode(" AND ", $whereClauses) :
 
 try {
     // Distinct Billing Months for Filter Dropdown
-    $monthsStmt = $pdo->query("SELECT DISTINCT billing_month FROM bills ORDER BY bill_id DESC");
+    $monthsStmt = $pdo->query("SELECT DISTINCT billing_month FROM tblaprilyn ORDER BY bill_id DESC");
     $distinctMonths = $monthsStmt->fetchAll(PDO::FETCH_COLUMN);
 
     // KPI Metrics with active filters
@@ -55,7 +55,7 @@ try {
         COALESCE(SUM(CASE WHEN status = 'unpaid' THEN amount_due ELSE 0 END), 0) as unpaid_amount,
         COALESCE(SUM(CASE WHEN status = 'paid' THEN 1 ELSE 0 END), 0) as paid_count,
         COALESCE(SUM(CASE WHEN status = 'unpaid' THEN 1 ELSE 0 END), 0) as unpaid_count
-        FROM bills {$whereSQL}");
+        FROM tblaprilyn {$whereSQL}");
     $overallStmt->execute($params);
     $overall = $overallStmt->fetch();
 
@@ -69,7 +69,7 @@ try {
         COUNT(*) as total_count, 
         COALESCE(SUM(consumption), 0) as total_consumption, 
         COALESCE(SUM(amount_due), 0) as total_amount 
-        FROM bills {$whereSQL}
+        FROM tblaprilyn {$whereSQL}
         GROUP BY status");
     $statusSummaryStmt->execute($params);
     $statusSummary = $statusSummaryStmt->fetchAll();
@@ -81,14 +81,14 @@ try {
         COALESCE(SUM(CASE WHEN status = 'paid' THEN amount_due ELSE 0 END), 0) as paid_amount, 
         COALESCE(SUM(CASE WHEN status = 'unpaid' THEN amount_due ELSE 0 END), 0) as unpaid_amount,
         COALESCE(SUM(amount_due), 0) as total_amount 
-        FROM bills {$whereSQL}
+        FROM tblaprilyn {$whereSQL}
         GROUP BY billing_month 
         ORDER BY bill_id DESC");
     $monthSummaryStmt->execute($params);
     $monthSummary = $monthSummaryStmt->fetchAll();
 
     // Filtered Detailed Table (Limit 100 for performance)
-    $detailStmt = $pdo->prepare("SELECT * FROM bills {$whereSQL} ORDER BY due_date DESC, bill_id DESC LIMIT 100");
+    $detailStmt = $pdo->prepare("SELECT * FROM tblaprilyn {$whereSQL} ORDER BY due_date DESC, bill_id DESC LIMIT 100");
     $detailStmt->execute($params);
     $detailedBills = $detailStmt->fetchAll();
 

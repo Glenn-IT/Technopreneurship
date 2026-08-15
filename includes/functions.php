@@ -104,3 +104,16 @@ function renderStatusBadge($status) {
         return '<span class="badge badge-unpaid"><i class="feather-clock me-1"></i> Unpaid</span>';
     }
 }
+
+/**
+ * Global 5 Security Questions Definition
+ */
+function getSecurityQuestions() {
+    return [
+        1 => 'What was the name of your first pet?',
+        2 => "What is your mother's maiden name?",
+        3 => 'What city were you born in?',
+        4 => 'What was the name of your elementary school?',
+        5 => 'What is your favorite movie or book?'
+    ];
+}

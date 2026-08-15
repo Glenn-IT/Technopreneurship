@@ -1,19 +1,19 @@
 <?php
 // dashboard.php - Main Application Dashboard
-$pageTitle = 'Dashboard Overview';
+$pageTitle = 'Water Billing System for Sta. Barbara, Piat Cagayan';
 require_once __DIR__ . '/includes/header.php';
 
 // Fetch Statistics
 try {
-    $totalBills   = $pdo->query("SELECT COUNT(*) FROM bills")->fetchColumn() ?: 0;
-    $totalPaid    = $pdo->query("SELECT COUNT(*) FROM bills WHERE status = 'paid'")->fetchColumn() ?: 0;
-    $totalUnpaid  = $pdo->query("SELECT COUNT(*) FROM bills WHERE status = 'unpaid'")->fetchColumn() ?: 0;
+    $totalBills   = $pdo->query("SELECT COUNT(*) FROM tblaprilyn")->fetchColumn() ?: 0;
+    $totalPaid    = $pdo->query("SELECT COUNT(*) FROM tblaprilyn WHERE status = 'paid'")->fetchColumn() ?: 0;
+    $totalUnpaid  = $pdo->query("SELECT COUNT(*) FROM tblaprilyn WHERE status = 'unpaid'")->fetchColumn() ?: 0;
     
-    $revenuePaid  = $pdo->query("SELECT SUM(amount_due) FROM bills WHERE status = 'paid'")->fetchColumn() ?: 0.00;
-    $revenuePending = $pdo->query("SELECT SUM(amount_due) FROM bills WHERE status = 'unpaid'")->fetchColumn() ?: 0.00;
+    $revenuePaid  = $pdo->query("SELECT SUM(amount_due) FROM tblaprilyn WHERE status = 'paid'")->fetchColumn() ?: 0.00;
+    $revenuePending = $pdo->query("SELECT SUM(amount_due) FROM tblaprilyn WHERE status = 'unpaid'")->fetchColumn() ?: 0.00;
 
     // Fetch 5 Latest Records
-    $recentStmt = $pdo->query("SELECT * FROM bills ORDER BY bill_id DESC LIMIT 5");
+    $recentStmt = $pdo->query("SELECT * FROM tblaprilyn ORDER BY bill_id DESC LIMIT 5");
     $recentBills = $recentStmt->fetchAll();
 } catch (PDOException $e) {
     $totalBills = $totalPaid = $totalUnpaid = 0;
@@ -21,6 +21,23 @@ try {
     $recentBills = [];
 }
 ?>
+
+<!-- System Title Banner -->
+<div class="card-box mb-4 py-3 px-4" style="border-left: 4px solid var(--primary) !important;">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div>
+            <h2 style="font-size:1.3rem; font-weight:800; color:var(--text-main); margin:0;">
+                Water Billing System for Sta. Barbara, Piat Cagayan
+            </h2>
+            <p class="text-muted m-0" style="font-size:0.85rem;">
+                Official Utility Operations & Consumer Management Portal
+            </p>
+        </div>
+        <div class="text-end text-muted font-weight-semibold" style="font-size:0.85rem;">
+            <?= date('l, F j, Y'); ?>
+        </div>
+    </div>
+</div>
 
 <!-- Statistics Overview -->
 <div class="stats-grid">

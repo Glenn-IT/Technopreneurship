@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Ramos Water Billing System</title>
+    <title>Login - Water Billing System for Sta. Barbara, Piat Cagayan</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css">
     <script src="https://unpkg.com/feather-icons"></script>
@@ -58,12 +58,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body class="auth-body">
 
-<div class="auth-card">
+<div class="auth-card" style="max-width: 460px;">
     <div class="auth-brand">
         <div class="auth-icon">
             <i data-feather="droplet"></i>
         </div>
-        <h2 class="auth-title">Water Billing System</h2>
+        <h2 class="auth-title" style="font-size:1.25rem;">Water Billing System for Sta. Barbara, Piat Cagayan</h2>
         <p class="auth-subtitle">Sign in to manage records and accounts</p>
     </div>
 
@@ -85,10 +85,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                    required value="<?= sanitize($_POST['username'] ?? ''); ?>">
         </div>
 
-        <div class="mb-4">
-            <label for="password" class="form-label-custom">Password</label>
-            <input type="password" name="password" id="password" class="form-control-custom" 
-                   required>
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label for="password" class="form-label-custom m-0">Password</label>
+                <a href="<?= baseUrl('forgot_password.php'); ?>" class="text-decoration-none font-weight-semibold" style="font-size:0.82rem; color:var(--primary);">Forgot Password?</a>
+            </div>
+            <div class="password-input-wrapper">
+                <input type="password" name="password" id="password" class="form-control-custom" required>
+                <button type="button" class="toggle-password-btn" data-target="password" title="Show/Hide Password">
+                    <i data-feather="eye"></i>
+                </button>
+            </div>
         </div>
 
         <button type="submit" class="btn-primary-custom w-100 justify-content-center py-2 mb-3">

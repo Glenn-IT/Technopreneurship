@@ -1,9 +1,8 @@
--- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 14, 2026 at 07:17 AM
+-- Generation Time: Aug 15, 2026 at 04:23 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,10 +23,10 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bills`
+-- Table structure for table `tblaprilyn`
 --
 
-CREATE TABLE `bills` (
+CREATE TABLE `tblaprilyn` (
   `bill_id` int(11) NOT NULL,
   `consumer_name` varchar(150) NOT NULL,
   `meter_number` varchar(50) NOT NULL,
@@ -42,10 +41,10 @@ CREATE TABLE `bills` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `bills`
+-- Dumping data for table `tblaprilyn`
 --
 
-INSERT INTO `bills` (`bill_id`, `consumer_name`, `meter_number`, `billing_month`, `consumption`, `amount_due`, `due_date`, `status`, `remarks`, `created_at`, `updated_at`) VALUES
+INSERT INTO `tblaprilyn` (`bill_id`, `consumer_name`, `meter_number`, `billing_month`, `consumption`, `amount_due`, `due_date`, `status`, `remarks`, `created_at`, `updated_at`) VALUES
 (1, 'Maria Santos', 'MTR-10001', 'August 2026', 25.50, 637.50, '2026-08-25', 'paid', 'Payment received via OTC', '2026-08-13 15:49:57', '2026-08-13 15:49:57'),
 (2, 'Pedro Penduko', 'MTR-10002', 'August 2026', 18.00, 450.00, '2026-08-28', 'unpaid', 'First notice sent', '2026-08-13 15:49:57', '2026-08-13 15:49:57'),
 (3, 'Clara Gonzales', 'MTR-10003', 'August 2026', 32.20, 805.00, '2026-08-20', 'paid', 'Paid on time', '2026-08-13 15:49:57', '2026-08-13 15:49:57'),
@@ -70,27 +69,34 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `role` enum('admin','staff') NOT NULL DEFAULT 'staff',
   `status` enum('active','inactive') NOT NULL DEFAULT 'active',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `sq1_answer` varchar(255) DEFAULT NULL,
+  `sq2_answer` varchar(255) DEFAULT NULL,
+  `sq3_answer` varchar(255) DEFAULT NULL,
+  `sq4_answer` varchar(255) DEFAULT NULL,
+  `sq5_answer` varchar(255) DEFAULT NULL,
+  `security_question` varchar(255) DEFAULT NULL,
+  `security_answer` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `full_name`, `email`, `password`, `role`, `status`, `created_at`) VALUES
-(1, 'admin', 'System Administrator', 'admin@ramoswater.com', '$2y$10$LIwYemWP4G5QrBz1Vrj8r.C/rBepwEzQArqdYSwPnFXeDVCSr216G', 'admin', 'active', '2026-08-13 15:49:57'),
-(2, 'staff1', 'Juan Dela Cruz', 'juan@ramoswater.com', '$2y$10$LIwYemWP4G5QrBz1Vrj8r.C/rBepwEzQArqdYSwPnFXeDVCSr216G', 'staff', 'active', '2026-08-13 15:49:57'),
-(3, 'jsmith', 'John Doe', 'jsmith@gmail.com', '$2y$10$iwyRLzU8JGjPpQF1ySaiUe9jZl7OssH1k46G7qty9kJJjQXSz5hFy', 'staff', 'active', '2026-08-13 16:00:36'),
-(4, 'sample', 'sample', 'sample@gmail.com', '$2y$10$tfi2rR6rmazef9GKVkOM/uMv3m/v3JT8KnUgvWbawWT510nkREjsa', 'staff', 'active', '2026-08-14 05:16:46');
+INSERT INTO `users` (`user_id`, `username`, `full_name`, `email`, `password`, `role`, `status`, `created_at`, `sq1_answer`, `sq2_answer`, `sq3_answer`, `sq4_answer`, `sq5_answer`, `security_question`, `security_answer`) VALUES
+(1, 'admin', 'System Administrator', 'admin@ramoswater.com', '$2y$10$WDApOxSvNPrliMRL391fi.fjh6OhZuxerQ0sERVSCNI5XDT9doJQm', 'admin', 'active', '2026-08-13 15:49:57', NULL, NULL, NULL, NULL, NULL, 'What was the name of your first pet?', 'sample'),
+(2, 'staff1', 'Juan Dela Cruz', 'juan@ramoswater.com', '$2y$10$LIwYemWP4G5QrBz1Vrj8r.C/rBepwEzQArqdYSwPnFXeDVCSr216G', 'staff', 'active', '2026-08-13 15:49:57', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(3, 'jsmith', 'John Doe', 'jsmith@gmail.com', '$2y$10$iwyRLzU8JGjPpQF1ySaiUe9jZl7OssH1k46G7qty9kJJjQXSz5hFy', 'staff', 'active', '2026-08-13 16:00:36', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(4, 'sample', 'sample', 'sample@gmail.com', '$2y$10$tfi2rR6rmazef9GKVkOM/uMv3m/v3JT8KnUgvWbawWT510nkREjsa', 'staff', 'active', '2026-08-14 05:16:46', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `bills`
+-- Indexes for table `tblaprilyn`
 --
-ALTER TABLE `bills`
+ALTER TABLE `tblaprilyn`
   ADD PRIMARY KEY (`bill_id`),
   ADD KEY `idx_status` (`status`),
   ADD KEY `idx_consumer` (`consumer_name`),
@@ -110,9 +116,9 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `bills`
+-- AUTO_INCREMENT for table `tblaprilyn`
 --
-ALTER TABLE `bills`
+ALTER TABLE `tblaprilyn`
   MODIFY `bill_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --

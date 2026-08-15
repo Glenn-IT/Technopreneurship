@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Consumer Name, Meter Number, Billing Month, and Due Date are required.';
     } else {
         try {
-            $stmt = $pdo->prepare("INSERT INTO bills (consumer_name, meter_number, billing_month, consumption, amount_due, due_date, status, remarks) 
+            $stmt = $pdo->prepare("INSERT INTO tblaprilyn (consumer_name, meter_number, billing_month, consumption, amount_due, due_date, status, remarks) 
                                    VALUES (:cn, :mn, :bm, :cs, :ad, :dd, :st, :rm)");
             $stmt->execute([
                 'cn' => $consumerName,

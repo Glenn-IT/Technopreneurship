@@ -7,7 +7,7 @@ $billId = (int)($_GET['id'] ?? 0);
 
 if ($billId > 0) {
     try {
-        $stmt = $pdo->prepare("DELETE FROM bills WHERE bill_id = :id LIMIT 1");
+        $stmt = $pdo->prepare("DELETE FROM tblaprilyn WHERE bill_id = :id LIMIT 1");
         $stmt->execute(['id' => $billId]);
         setFlash('success', 'Water bill record #' . $billId . ' has been deleted.');
     } catch (PDOException $e) {

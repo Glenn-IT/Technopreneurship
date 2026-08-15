@@ -14,7 +14,7 @@ if ($billId <= 0) {
 
 // Fetch existing record
 try {
-    $stmt = $pdo->prepare("SELECT * FROM bills WHERE bill_id = :id LIMIT 1");
+    $stmt = $pdo->prepare("SELECT * FROM tblaprilyn WHERE bill_id = :id LIMIT 1");
     $stmt->execute(['id' => $billId]);
     $bill = $stmt->fetch();
 
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Consumer Name, Meter Number, Billing Month, and Due Date are required.';
     } else {
         try {
-            $updateStmt = $pdo->prepare("UPDATE bills SET 
+            $updateStmt = $pdo->prepare("UPDATE tblaprilyn SET 
                 consumer_name = :cn,
                 meter_number = :mn,
                 billing_month = :bm,

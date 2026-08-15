@@ -4,14 +4,14 @@ require_once __DIR__ . '/auth.php';
 requireLogin();
 
 $user = currentUser();
-$pageTitle = $pageTitle ?? 'Water Billing System';
+$pageTitle = $pageTitle ?? 'Water Billing System for Sta. Barbara, Piat Cagayan';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= sanitize($pageTitle); ?> - Ramos Water Billing</title>
+    <title><?= sanitize($pageTitle); ?> - Sta. Barbara, Piat Cagayan</title>
 
     <!-- Google Fonts & Feather Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

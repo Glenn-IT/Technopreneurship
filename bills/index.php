@@ -30,12 +30,12 @@ if ($monthFilter !== '') {
 $whereSQL = !empty($whereClauses) ? "WHERE " . implode(" AND ", $whereClauses) : "";
 
 // Fetch distinct billing months for dropdown filter
-$monthsStmt = $pdo->query("SELECT DISTINCT billing_month FROM bills ORDER BY billing_month DESC");
+$monthsStmt = $pdo->query("SELECT DISTINCT billing_month FROM tblaprilyn ORDER BY billing_month DESC");
 $billingMonths = $monthsStmt->fetchAll(PDO::FETCH_COLUMN);
 
 // Fetch Matching Bills
 try {
-    $stmt = $pdo->prepare("SELECT * FROM bills {$whereSQL} ORDER BY bill_id DESC");
+    $stmt = $pdo->prepare("SELECT * FROM tblaprilyn {$whereSQL} ORDER BY bill_id DESC");
     $stmt->execute($params);
     $bills = $stmt->fetchAll();
 } catch (PDOException $e) {

@@ -46,3 +46,28 @@ function getDBConnection() {
 }
 
 $pdo = getDBConnection();
+
+// Auto migration: Ensure Security Questions columns exist in users table
+try {
+    $checkCols = $pdo->query("SHOW COLUMNS FROM users LIKE 'security_question'");
+    if (!$checkCols->fetch()) {
+        $pdo->exec("ALTER TABLE users 
+            ADD COLUMN security_question VARCHAR(255) DEFAULT NULL,
+            ADD COLUMN security_answer VARCHAR(255) DEFAULT NULL");
+    }
+} catch (PDOException $e) {
+    // Suppress if table does not exist yet during initial setup
+}
+
+// Auto migration: Rename bills table to tblaprilyn
+try {
+    $checkTbl = $pdo->query("SHOW TABLES LIKE 'tblaprilyn'");
+    if (!$checkTbl->fetch()) {
+        $checkBills = $pdo->query("SHOW TABLES LIKE 'bills'");
+        if ($checkBills->fetch()) {
+            $pdo->exec("RENAME TABLE bills TO tblaprilyn");
+        }
+    }
+} catch (PDOException $e) {
+    // Ignore migration error
+}

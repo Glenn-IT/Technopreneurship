@@ -41,7 +41,7 @@ if ($dateTo !== '') {
 $whereSQL = !empty($whereClauses) ? "WHERE " . implode(" AND ", $whereClauses) : "";
 
 try {
-    $stmt = $pdo->prepare("SELECT bill_id, consumer_name, meter_number, billing_month, consumption, amount_due, due_date, status, remarks, created_at FROM bills {$whereSQL} ORDER BY bill_id DESC");
+    $stmt = $pdo->prepare("SELECT bill_id, consumer_name, meter_number, billing_month, consumption, amount_due, due_date, status, remarks, created_at FROM tblaprilyn {$whereSQL} ORDER BY bill_id DESC");
     $stmt->execute($params);
     $bills = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

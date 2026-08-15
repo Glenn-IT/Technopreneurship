@@ -10,8 +10,8 @@ $user = currentUser();
             <i data-feather="droplet"></i>
         </div>
         <div>
-            <div class="sidebar-brand-text">Ramos Water</div>
-            <div class="sidebar-brand-sub">Billing System</div>
+            <div class="sidebar-brand-text">Sta. Barbara Water</div>
+            <div class="sidebar-brand-sub">Piat, Cagayan</div>
         </div>
     </div>
 

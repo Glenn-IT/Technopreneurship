@@ -525,6 +525,48 @@ body {
   box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
 }
 
+/* Password Field Toggle Wrapper */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-wrapper .form-control-custom {
+  padding-right: 44px;
+}
+
+.password-input-wrapper .toggle-password-btn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  z-index: 10;
+}
+
+.password-input-wrapper .toggle-password-btn:hover {
+  color: var(--primary);
+  background-color: #f1f5f9;
+}
+
+.password-input-wrapper .toggle-password-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+}
+
 /* Authentication Page Styling */
 .auth-body {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);

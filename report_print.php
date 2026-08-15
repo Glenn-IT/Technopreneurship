@@ -53,12 +53,12 @@ try {
         COALESCE(SUM(CASE WHEN status = 'unpaid' THEN amount_due ELSE 0 END), 0) as unpaid_amount,
         COALESCE(SUM(CASE WHEN status = 'paid' THEN 1 ELSE 0 END), 0) as paid_count,
         COALESCE(SUM(CASE WHEN status = 'unpaid' THEN 1 ELSE 0 END), 0) as unpaid_count
-        FROM bills {$whereSQL}");
+        FROM tblaprilyn {$whereSQL}");
     $summaryStmt->execute($params);
     $metrics = $summaryStmt->fetch(PDO::FETCH_ASSOC);
 
     // Fetch Detailed Bills
-    $stmt = $pdo->prepare("SELECT * FROM bills {$whereSQL} ORDER BY due_date DESC, bill_id DESC");
+    $stmt = $pdo->prepare("SELECT * FROM tblaprilyn {$whereSQL} ORDER BY due_date DESC, bill_id DESC");
     $stmt->execute($params);
     $bills = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -72,7 +72,7 @@ try {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Billing & Financial Summary Report - Ramos Water</title>
+    <title>Billing & Financial Summary Report - Sta. Barbara, Piat Cagayan</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         body {
@@ -186,8 +186,8 @@ try {
     <!-- Header -->
     <div class="report-header d-flex justify-content-between align-items-center">
         <div>
-            <div class="report-title">RAMOS WATER UTILITY</div>
-            <div class="report-sub">Official Billing & Financial Summary Report</div>
+            <div class="report-title">STA. BARBARA WATER UTILITY</div>
+            <div class="report-sub">Piat, Cagayan - Billing & Financial Summary Report</div>
         </div>
         <div class="text-end" style="font-size:0.82rem; color:#64748b;">
             <div><strong>Date Generated:</strong> <?= date('F d, Y h:i A'); ?></div>

@@ -92,7 +92,12 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <div class="mb-3">
                     <label for="password" class="form-label-custom">Initial Password <span class="text-danger">*</span></label>
-                    <input type="password" name="password" id="password" class="form-control-custom" required placeholder="••••••••">
+                    <div class="password-input-wrapper">
+                        <input type="password" name="password" id="password" class="form-control-custom" required>
+                        <button type="button" class="toggle-password-btn" data-target="password" title="Show/Hide Password">
+                            <i data-feather="eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="row g-3 mb-4">

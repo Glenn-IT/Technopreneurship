@@ -1,11 +1,22 @@
 <?php
-// profile.php - User Profile & Change Password Module
+// profile.php - User Profile & Change Password & Security Questions Module
 require_once __DIR__ . '/includes/auth.php';
 requireLogin();
 
 $user = currentUser();
 $errorProfile = '';
 $errorPass = '';
+$errorSQ = '';
+$questions = getSecurityQuestions();
+
+// Fetch fresh user data from DB including security answers
+try {
+    $freshUserStmt = $pdo->prepare("SELECT * FROM users WHERE user_id = :id LIMIT 1");
+    $freshUserStmt->execute(['id' => $user['user_id']]);
+    $userRecord = $freshUserStmt->fetch();
+} catch (PDOException $e) {
+    $userRecord = $user;
+}
 
 // Handle Profile Details Update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type']) && $_POST['action_type'] === 'update_profile') {
@@ -80,12 +91,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type']) && $_P
     }
 }
 
+// Handle Security Question & Answer Update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type']) && $_POST['action_type'] === 'update_sq') {
+    $secQuestion = trim($_POST['security_question'] ?? '');
+    $secAnswer   = trim($_POST['security_answer'] ?? '');
+    $csrfToken   = $_POST['csrf_token'] ?? '';
+
+    if (!verifyCsrfToken($csrfToken)) {
+        $errorSQ = 'Invalid security token.';
+    } elseif (empty($secQuestion) || empty($secAnswer)) {
+        $errorSQ = 'Please select a security question from the combo box and enter your answer.';
+    } else {
+        try {
+            $updateSqStmt = $pdo->prepare("UPDATE users SET 
+                security_question = :q, security_answer = :a 
+                WHERE user_id = :id");
+            $updateSqStmt->execute([
+                'q'  => $secQuestion,
+                'a'  => $secAnswer,
+                'id' => $user['user_id']
+            ]);
+
+            setFlash('success', 'Your security question and answer have been updated successfully.');
+            header('Location: ' . baseUrl('profile.php'));
+            exit;
+        } catch (PDOException $ex) {
+            $errorSQ = 'Database error: ' . $ex->getMessage();
+        }
+    }
+}
+
 $pageTitle = 'My Account Profile';
 require_once __DIR__ . '/includes/header.php';
 ?>
 
 <div class="row">
-    <!-- Profile Info Card -->
+    <!-- Personal Details Card -->
     <div class="col-lg-6 mb-4">
         <div class="card-box h-100">
             <h3 style="font-size:1.15rem; font-weight:700;" class="mb-3">Personal Details</h3>
@@ -110,13 +151,13 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="mb-3">
                     <label for="full_name" class="form-label-custom">Full Name</label>
                     <input type="text" name="full_name" id="full_name" class="form-control-custom" 
-                           required value="<?= sanitize($_POST['full_name'] ?? $user['full_name']); ?>">
+                           required value="<?= sanitize($_POST['full_name'] ?? $userRecord['full_name']); ?>">
                 </div>
 
                 <div class="mb-3">
                     <label for="email" class="form-label-custom">Email Address</label>
                     <input type="email" name="email" id="email" class="form-control-custom" 
-                           required value="<?= sanitize($_POST['email'] ?? $user['email']); ?>">
+                           required value="<?= sanitize($_POST['email'] ?? $userRecord['email']); ?>">
                 </div>
 
                 <div class="mb-4">
@@ -151,20 +192,32 @@ require_once __DIR__ . '/includes/header.php';
 
                 <div class="mb-3">
                     <label for="current_password" class="form-label-custom">Current Password</label>
-                    <input type="password" name="current_password" id="current_password" class="form-control-custom" 
-                           required placeholder="••••••••">
+                    <div class="password-input-wrapper">
+                        <input type="password" name="current_password" id="current_password" class="form-control-custom" required>
+                        <button type="button" class="toggle-password-btn" data-target="current_password" title="Show/Hide Password">
+                            <i data-feather="eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="mb-3">
                     <label for="new_password" class="form-label-custom">New Password</label>
-                    <input type="password" name="new_password" id="new_password" class="form-control-custom" 
-                           required placeholder="••••••••">
+                    <div class="password-input-wrapper">
+                        <input type="password" name="new_password" id="new_password" class="form-control-custom" required>
+                        <button type="button" class="toggle-password-btn" data-target="new_password" title="Show/Hide Password">
+                            <i data-feather="eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="mb-4">
                     <label for="confirm_password" class="form-label-custom">Confirm New Password</label>
-                    <input type="password" name="confirm_password" id="confirm_password" class="form-control-custom" 
-                           required placeholder="••••••••">
+                    <div class="password-input-wrapper">
+                        <input type="password" name="confirm_password" id="confirm_password" class="form-control-custom" required>
+                        <button type="button" class="toggle-password-btn" data-target="confirm_password" title="Show/Hide Password">
+                            <i data-feather="eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-primary-custom">
@@ -175,4 +228,60 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 </div>
 
+<!-- Security Question Card (Combo Box) -->
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card-box">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <div>
+                    <h3 style="font-size:1.15rem; font-weight:700;" class="m-0">Security Question Setup</h3>
+                    <p class="text-muted m-0" style="font-size:0.85rem;">Select your security question from the combo box and enter your answer for password recovery.</p>
+                </div>
+                <span class="badge <?= (!empty($userRecord['security_answer'])) ? 'bg-success' : 'bg-warning text-dark' ?>">
+                    <?= (!empty($userRecord['security_answer'])) ? 'Configured' : 'Setup Required' ?>
+                </span>
+            </div>
+
+            <?php if (!empty($errorSQ)): ?>
+                <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+                    <i data-feather="alert-circle" class="me-2"></i>
+                    <div><?= sanitize($errorSQ); ?></div>
+                </div>
+            <?php endif; ?>
+
+            <form action="" method="POST">
+                <?= csrfField(); ?>
+                <input type="hidden" name="action_type" value="update_sq">
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="security_question" class="form-label-custom">Select Security Question (Combo Box) <span class="text-danger">*</span></label>
+                        <select name="security_question" id="security_question" class="form-select-custom" required>
+                            <option value="">-- Choose a Security Question --</option>
+                            <?php foreach ($questions as $id => $qText): ?>
+                                <option value="<?= sanitize($qText); ?>" <?= (($_POST['security_question'] ?? $userRecord['security_question'] ?? '') === $qText) ? 'selected' : ''; ?>>
+                                    <?= sanitize($qText); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="security_answer" class="form-label-custom">Security Answer <span class="text-danger">*</span></label>
+                        <input type="text" name="security_answer" id="security_answer" class="form-control-custom" required 
+                               value="<?= sanitize($_POST['security_answer'] ?? $userRecord['security_answer'] ?? ''); ?>">
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end">
+                    <button type="submit" class="btn-primary-custom">
+                        <i data-feather="shield"></i> Save Security Question
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
+
