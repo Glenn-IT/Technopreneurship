@@ -138,6 +138,9 @@ try {
                             <td><small class="text-muted"><?= sanitize($bill['remarks'] ?? '-'); ?></small></td>
                             <td class="text-end">
                                 <div class="table-action-btns">
+                                    <a href="<?= baseUrl('bills/view.php?id=' . $bill['bill_id']); ?>" class="btn-action-view" title="View Bill">
+                                        <i data-feather="eye"></i> View
+                                    </a>
                                     <a href="<?= baseUrl('bills/edit.php?id=' . $bill['bill_id']); ?>" class="btn-action-edit" title="Edit Bill">
                                         <i data-feather="edit-2"></i> Edit
                                     </a>

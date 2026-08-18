@@ -123,17 +123,26 @@ $printUrl  = baseUrl('report_print.php') . '?' . http_build_query($queryParams);
     </div>
 </div>
 
-<!-- Interactive Report Filters Form -->
+<!-- Interactive Report Filters Form (Live Search – auto-submits on change) -->
 <div class="filter-card">
-    <form method="GET" action="reports.php" class="row g-3 align-items-end">
+    <form method="GET" action="reports.php" id="reportFilterForm" class="row g-3 align-items-end">
+
         <div class="col-md-3">
-            <label class="form-label-custom">Search Consumer / Meter</label>
-            <input type="text" name="search" class="form-control-custom" placeholder="Consumer name or meter #..." value="<?= sanitize($search); ?>">
+            <label class="form-label-custom">
+                <i data-feather="search" style="width:13px;height:13px;vertical-align:-2px;"></i>
+                Search Consumer / Meter
+            </label>
+            <div style="position:relative;">
+                <input type="text" name="search" id="filterSearch"
+                       class="form-control-custom" placeholder="Consumer name or meter #..."
+                       value="<?= sanitize($search); ?>" autocomplete="off">
+                <span id="searchSpinner" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;border:2px solid #cbd5e1;border-top-color:var(--primary,#4f46e5);border-radius:50%;animation:spin .6s linear infinite;"></span>
+            </div>
         </div>
 
         <div class="col-md-2">
             <label class="form-label-custom">Billing Month</label>
-            <select name="month" class="form-select-custom">
+            <select name="month" id="filterMonth" class="form-select-custom">
                 <option value="">All Months</option>
                 <?php foreach ($distinctMonths as $m): ?>
                     <option value="<?= sanitize($m); ?>" <?= ($monthFilter === $m) ? 'selected' : ''; ?>>
@@ -145,35 +154,41 @@ $printUrl  = baseUrl('report_print.php') . '?' . http_build_query($queryParams);
 
         <div class="col-md-2">
             <label class="form-label-custom">Payment Status</label>
-            <select name="status" class="form-select-custom">
+            <select name="status" id="filterStatus" class="form-select-custom">
                 <option value="">All Statuses</option>
-                <option value="paid" <?= ($statusFilter === 'paid') ? 'selected' : ''; ?>>Paid</option>
+                <option value="paid"   <?= ($statusFilter === 'paid')   ? 'selected' : ''; ?>>Paid</option>
                 <option value="unpaid" <?= ($statusFilter === 'unpaid') ? 'selected' : ''; ?>>Unpaid</option>
             </select>
         </div>
 
         <div class="col-md-2">
             <label class="form-label-custom">Due Date From</label>
-            <input type="date" name="date_from" class="form-control-custom" value="<?= sanitize($dateFrom); ?>">
+            <input type="date" name="date_from" id="filterDateFrom"
+                   class="form-control-custom" value="<?= sanitize($dateFrom); ?>">
         </div>
 
         <div class="col-md-2">
             <label class="form-label-custom">Due Date To</label>
-            <input type="date" name="date_to" class="form-control-custom" value="<?= sanitize($dateTo); ?>">
+            <input type="date" name="date_to" id="filterDateTo"
+                   class="form-control-custom" value="<?= sanitize($dateTo); ?>">
         </div>
 
-        <div class="col-md-1 d-flex gap-2">
-            <button type="submit" class="btn-primary-custom w-100 justify-content-center" title="Apply Filters">
-                <i data-feather="filter"></i>
-            </button>
-            <?php if ($search || $statusFilter || $monthFilter || $dateFrom || $dateTo): ?>
-                <a href="reports.php" class="btn-secondary-custom justify-content-center" title="Reset Filters">
-                    <i data-feather="rotate-ccw"></i>
-                </a>
-            <?php endif; ?>
+        <div class="col-md-1 d-flex align-items-end">
+            <a href="reports.php"
+               class="btn-secondary-custom w-100 justify-content-center <?= ($search || $statusFilter || $monthFilter || $dateFrom || $dateTo) ? '' : 'opacity-40'; ?>"
+               title="Clear all filters" id="btnResetFilters"
+               style="<?= ($search || $statusFilter || $monthFilter || $dateFrom || $dateTo) ? '' : 'pointer-events:none;'; ?>">
+                <i data-feather="rotate-ccw"></i>
+            </a>
         </div>
+
     </form>
 </div>
+
+<style>
+@keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+.opacity-40 { opacity: 0.4; }
+</style>
 
 <!-- Overall Metric Summary Cards -->
 <div class="stats-grid mb-4">
@@ -451,6 +466,69 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+</script>
+
+<!-- Live Filter Auto-Submit Script -->
+<script>
+(function () {
+    const form        = document.getElementById('reportFilterForm');
+    const searchInput = document.getElementById('filterSearch');
+    const spinner     = document.getElementById('searchSpinner');
+    const resetBtn    = document.getElementById('btnResetFilters');
+
+    if (!form) return;
+
+    // ── Helpers ──────────────────────────────────────────────
+    function hasActiveFilters() {
+        const s  = searchInput ? searchInput.value.trim() : '';
+        const m  = document.getElementById('filterMonth')   ? document.getElementById('filterMonth').value   : '';
+        const st = document.getElementById('filterStatus')  ? document.getElementById('filterStatus').value  : '';
+        const df = document.getElementById('filterDateFrom')? document.getElementById('filterDateFrom').value: '';
+        const dt = document.getElementById('filterDateTo')  ? document.getElementById('filterDateTo').value  : '';
+        return !!(s || m || st || df || dt);
+    }
+
+    function syncResetBtn() {
+        if (!resetBtn) return;
+        if (hasActiveFilters()) {
+            resetBtn.classList.remove('opacity-40');
+            resetBtn.style.pointerEvents = '';
+        } else {
+            resetBtn.classList.add('opacity-40');
+            resetBtn.style.pointerEvents = 'none';
+        }
+    }
+
+    function submitForm() {
+        if (spinner) spinner.style.display = 'inline-block';
+        form.submit();
+    }
+
+    // ── Text search – debounce 350 ms ─────────────────────────
+    let debounceTimer;
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            syncResetBtn();
+            clearTimeout(debounceTimer);
+            if (spinner) spinner.style.display = 'inline-block';
+            debounceTimer = setTimeout(submitForm, 350);
+        });
+    }
+
+    // ── Selects & date pickers – instant submit ───────────────
+    ['filterMonth', 'filterStatus', 'filterDateFrom', 'filterDateTo'].forEach(function (id) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('change', function () {
+                syncResetBtn();
+                submitForm();
+            });
+        }
+    });
+
+    // ── Init reset button state ───────────────────────────────
+    syncResetBtn();
+})();
 </script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

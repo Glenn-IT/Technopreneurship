@@ -43,6 +43,11 @@ $user = currentUser();
             <i data-feather="users"></i>
             <span>Manage Users</span>
         </a>
+        <a href="<?= baseUrl('activity_logs.php'); ?>"
+           class="sidebar-link <?= ($currentPage === 'activity_logs.php') ? 'active' : ''; ?>">
+            <i data-feather="shield"></i>
+            <span>Activity Logs</span>
+        </a>
         <?php endif; ?>
 
         <div class="nav-section-title">Account</div>
@@ -52,7 +57,7 @@ $user = currentUser();
             <span>My Profile</span>
         </a>
 
-        <a href="<?= baseUrl('logout.php'); ?>" class="sidebar-link text-danger mt-2">
+        <a href="<?= baseUrl('logout.php'); ?>" class="sidebar-link text-danger mt-2" id="sidebarLogoutBtn" data-logout-confirm>
             <i data-feather="log-out"></i>
             <span>Logout</span>
         </a>

@@ -493,10 +493,34 @@ body {
 }
 
 .btn-action-edit svg,
-.btn-action-delete svg {
+.btn-action-delete svg,
+.btn-action-view svg {
   width: 14px;
   height: 14px;
   stroke-width: 2.2;
+}
+
+.btn-action-view {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #059669;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: var(--transition);
+  line-height: 1;
+}
+
+.btn-action-view:hover {
+  background-color: #059669;
+  color: #ffffff;
+  border-color: #059669;
 }
 
 /* Form Fields */

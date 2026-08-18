@@ -71,3 +71,22 @@ try {
 } catch (PDOException $e) {
     // Ignore migration error
 }
+
+// Auto migration: Create activity_logs table
+try {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `activity_logs` (
+        `log_id`      INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `user_id`     INT UNSIGNED DEFAULT NULL,
+        `username`    VARCHAR(100) NOT NULL DEFAULT '',
+        `full_name`   VARCHAR(200) NOT NULL DEFAULT '',
+        `action`      ENUM('login','logout') NOT NULL,
+        `ip_address`  VARCHAR(45) DEFAULT NULL,
+        `user_agent`  VARCHAR(300) DEFAULT NULL,
+        `logged_at`   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_user_id  (`user_id`),
+        INDEX idx_action   (`action`),
+        INDEX idx_logged_at(`logged_at`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+} catch (PDOException $e) {
+    // Ignore if already exists
+}

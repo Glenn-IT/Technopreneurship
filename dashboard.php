@@ -1,6 +1,6 @@
 <?php
 // dashboard.php - Main Application Dashboard
-$pageTitle = 'Water Billing System for Sta. Barbara, Piat Cagayan';
+$pageTitle = 'Water Billing System for Sta. Barbara, Piat, Cagayan';
 require_once __DIR__ . '/includes/header.php';
 
 // Fetch Statistics

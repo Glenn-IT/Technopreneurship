@@ -33,6 +33,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['email']     = $user['email'];
                 $_SESSION['user_role'] = $user['role'];
 
+                // Record login activity
+                try {
+                    $ip = $_SERVER['HTTP_X_FORWARDED_FOR']
+                        ?? $_SERVER['REMOTE_ADDR']
+                        ?? 'unknown';
+                    $ua = substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 300);
+                    $logStmt = $pdo->prepare(
+                        "INSERT INTO activity_logs (user_id, username, full_name, action, ip_address, user_agent)
+                         VALUES (:uid, :uname, :fname, 'login', :ip, :ua)"
+                    );
+                    $logStmt->execute([
+                        'uid'   => $user['user_id'],
+                        'uname' => $user['username'],
+                        'fname' => $user['full_name'],
+                        'ip'    => $ip,
+                        'ua'    => $ua,
+                    ]);
+                } catch (PDOException $logErr) { /* non-fatal */ }
+
                 setFlash('success', 'Welcome back, ' . htmlspecialchars($user['full_name']) . '!');
                 header('Location: ' . baseUrl('dashboard.php'));
                 exit;

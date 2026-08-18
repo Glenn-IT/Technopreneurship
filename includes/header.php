@@ -4,14 +4,14 @@ require_once __DIR__ . '/auth.php';
 requireLogin();
 
 $user = currentUser();
-$pageTitle = $pageTitle ?? 'Water Billing System for Sta. Barbara, Piat Cagayan';
+$pageTitle = $pageTitle ?? 'Water Billing System for Sta. Barbara, Piat, Cagayan';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= sanitize($pageTitle); ?> - Sta. Barbara, Piat Cagayan</title>
+    <title><?= sanitize($pageTitle); ?> - Sta. Barbara, Piat, Cagayan</title>
 
     <!-- Google Fonts & Feather Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -57,7 +57,8 @@ $pageTitle = $pageTitle ?? 'Water Billing System for Sta. Barbara, Piat Cagayan'
                         </li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item text-danger d-flex align-items-center gap-2" href="<?= baseUrl('logout.php'); ?>">
+                            <a class="dropdown-item text-danger d-flex align-items-center gap-2"
+                               href="<?= baseUrl('logout.php'); ?>" data-logout-confirm>
                                 <i data-feather="log-out" style="width:16px;"></i> Logout
                             </a>
                         </li>
