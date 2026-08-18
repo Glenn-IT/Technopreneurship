@@ -47,14 +47,9 @@ require_once __DIR__ . '/../includes/header.php';
                     </h3>
                     <p class="text-muted m-0" style="font-size:0.85rem;">Read-only profile view</p>
                 </div>
-                <div class="d-flex gap-2">
-                    <a href="<?= baseUrl('users/edit.php?id=' . $u['user_id']); ?>" class="btn-primary-custom">
-                        <i data-feather="edit-2"></i> Edit
-                    </a>
-                    <a href="<?= baseUrl('users/index.php'); ?>" class="btn-secondary-custom">
-                        <i data-feather="arrow-left"></i> Back
-                    </a>
-                </div>
+                <a href="<?= baseUrl('users/index.php'); ?>" class="btn-secondary-custom">
+                    <i data-feather="arrow-left"></i> Back
+                </a>
             </div>
 
             <?= getFlash(); ?>
