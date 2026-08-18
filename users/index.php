@@ -67,6 +67,9 @@ try {
                             <td><?= date('M d, Y', strtotime($u['created_at'])); ?></td>
                             <td class="text-end">
                                 <div class="table-action-btns">
+                                    <a href="<?= baseUrl('users/view.php?id=' . $u['user_id']); ?>" class="btn-action-view" title="View User">
+                                        <i data-feather="eye"></i> View
+                                    </a>
                                     <a href="<?= baseUrl('users/edit.php?id=' . $u['user_id']); ?>" class="btn-action-edit" title="Edit User">
                                         <i data-feather="edit-2"></i> Edit
                                     </a>
