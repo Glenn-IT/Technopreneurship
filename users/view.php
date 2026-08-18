@@ -27,29 +27,6 @@ try {
     exit;
 }
 
-// Fetch last login/logout from activity logs
-try {
-    $lastLoginStmt = $pdo->prepare(
-        "SELECT logged_at, ip_address FROM activity_logs WHERE user_id = :id AND action = 'login' ORDER BY logged_at DESC LIMIT 1"
-    );
-    $lastLoginStmt->execute(['id' => $userId]);
-    $lastLogin = $lastLoginStmt->fetch();
-
-    $lastLogoutStmt = $pdo->prepare(
-        "SELECT logged_at FROM activity_logs WHERE user_id = :id AND action = 'logout' ORDER BY logged_at DESC LIMIT 1"
-    );
-    $lastLogoutStmt->execute(['id' => $userId]);
-    $lastLogout = $lastLogoutStmt->fetch();
-
-    $totalLoginsStmt = $pdo->prepare("SELECT COUNT(*) FROM activity_logs WHERE user_id = :id AND action = 'login'");
-    $totalLoginsStmt->execute(['id' => $userId]);
-    $totalLogins = (int)$totalLoginsStmt->fetchColumn();
-} catch (PDOException $e) {
-    $lastLogin  = null;
-    $lastLogout = null;
-    $totalLogins = 0;
-}
-
 $isAdmin  = $u['role'] === 'admin';
 $isActive = $u['status'] === 'active';
 $isSelf   = $u['user_id'] == $_SESSION['user_id'];
@@ -59,7 +36,7 @@ require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-lg-7">
         <div class="card-box">
 
             <!-- Header -->
@@ -105,13 +82,9 @@ require_once __DIR__ . '/../includes/header.php';
                         </span>
                     </div>
                 </div>
-                <div class="uv-login-count">
-                    <div class="uv-login-num"><?= number_format($totalLogins); ?></div>
-                    <div class="uv-login-lbl">Total Logins</div>
-                </div>
             </div>
 
-            <!-- Detail Grid -->
+            <!-- Detail Grid (2 sections only) -->
             <div class="uv-detail-grid">
 
                 <div class="uv-detail-section">
@@ -160,59 +133,6 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                 </div>
 
-                <div class="uv-detail-section">
-                    <div class="uv-section-title">
-                        <i data-feather="log-in"></i> Last Login
-                    </div>
-                    <?php if ($lastLogin): ?>
-                    <div class="uv-detail-row">
-                        <span class="uv-label">Date & Time</span>
-                        <span class="uv-value">
-                            <div><?= date('M j, Y', strtotime($lastLogin['logged_at'])); ?></div>
-                            <div style="font-size:0.78rem;color:#64748b;"><?= date('g:i:s A', strtotime($lastLogin['logged_at'])); ?></div>
-                        </span>
-                    </div>
-                    <div class="uv-detail-row">
-                        <span class="uv-label">IP Address</span>
-                        <span class="uv-value">
-                            <code style="background:#e0f2fe;color:#0369a1;padding:2px 6px;border-radius:4px;font-size:0.8rem;">
-                                <?= sanitize($lastLogin['ip_address'] ?? '—'); ?>
-                            </code>
-                        </span>
-                    </div>
-                    <?php else: ?>
-                    <div class="uv-detail-row">
-                        <span class="uv-label">Last Login</span>
-                        <span class="uv-value text-muted">No login recorded yet</span>
-                    </div>
-                    <?php endif; ?>
-                    <div class="uv-detail-row">
-                        <span class="uv-label">Last Logout</span>
-                        <span class="uv-value">
-                            <?php if ($lastLogout): ?>
-                                <div><?= date('M j, Y', strtotime($lastLogout['logged_at'])); ?></div>
-                                <div style="font-size:0.78rem;color:#64748b;"><?= date('g:i:s A', strtotime($lastLogout['logged_at'])); ?></div>
-                            <?php else: ?>
-                                <span class="text-muted">—</span>
-                            <?php endif; ?>
-                        </span>
-                    </div>
-                </div>
-
-                <div class="uv-detail-section">
-                    <div class="uv-section-title">
-                        <i data-feather="activity"></i> Session Activity
-                    </div>
-                    <div class="uv-detail-row">
-                        <span class="uv-label">Total Logins</span>
-                        <span class="uv-value"><strong><?= number_format($totalLogins); ?></strong></span>
-                    </div>
-                    <div class="uv-detail-row">
-                        <span class="uv-label">User ID</span>
-                        <span class="uv-value"><strong>#<?= $u['user_id']; ?></strong></span>
-                    </div>
-                </div>
-
             </div>
 
             <!-- Footer Actions -->
@@ -235,7 +155,6 @@ require_once __DIR__ . '/../includes/header.php';
 </div>
 
 <style>
-/* ── Profile Banner ── */
 .uv-profile-banner {
     display: flex;
     align-items: center;
@@ -248,34 +167,27 @@ require_once __DIR__ . '/../includes/header.php';
 .uv-avatar {
     width: 52px; height: 52px;
     border-radius: 50%;
-    font-size: 1.2rem;
-    font-weight: 800;
+    font-size: 1.2rem; font-weight: 800;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
 }
 .uv-avatar-admin { background: #ede9fe; color: #7c3aed; border: 2px solid #ddd6fe; }
 .uv-avatar-staff { background: #dbeafe; color: #1d4ed8; border: 2px solid #bfdbfe; }
 
-.uv-profile-info   { flex: 1; min-width: 0; }
-.uv-profile-name   { font-size: 1rem; font-weight: 700; color: #0f172a; }
-.uv-profile-meta   { display: flex; gap: 6px; margin-top: 5px; flex-wrap: wrap; }
+.uv-profile-info  { flex: 1; min-width: 0; }
+.uv-profile-name  { font-size: 1rem; font-weight: 700; color: #0f172a; }
+.uv-profile-meta  { display: flex; gap: 6px; margin-top: 5px; flex-wrap: wrap; }
 
-.uv-login-count    { text-align: center; flex-shrink: 0; }
-.uv-login-num      { font-size: 1.5rem; font-weight: 800; color: var(--primary, #4f46e5); line-height: 1; }
-.uv-login-lbl      { font-size: 0.72rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
-
-/* ── Role & Status Badges ── */
 .uv-role-badge, .uv-status-badge {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 3px 10px; border-radius: 20px;
     font-size: 0.74rem; font-weight: 700; letter-spacing: 0.02em;
 }
-.uv-role-admin   { background: #ede9fe; color: #7c3aed; border: 1px solid #ddd6fe; }
-.uv-role-staff   { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.uv-role-admin      { background: #ede9fe; color: #7c3aed; border: 1px solid #ddd6fe; }
+.uv-role-staff      { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
 .uv-status-active   { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
 .uv-status-inactive { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
 
-/* ── Detail Grid ── */
 .uv-detail-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -300,7 +212,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 .uv-detail-row {
     display: flex; justify-content: space-between;
-    align-items: flex-start; gap: 0.5rem;
+    align-items: center; gap: 0.5rem;
     padding: 0.4rem 0;
     border-bottom: 1px dashed #e2e8f0;
 }
@@ -309,7 +221,6 @@ require_once __DIR__ . '/../includes/header.php';
 .uv-label { font-size: 0.8rem; color: #64748b; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
 .uv-value { font-size: 0.87rem; color: #1e293b; font-weight: 500; text-align: right; }
 
-/* ── Delete btn fix ── */
 .btn-action-delete {
     display: inline-flex; align-items: center; gap: 0.35rem;
     padding: 0.45rem 0.9rem; border-radius: 7px;
